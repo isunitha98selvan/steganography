@@ -1,4 +1,5 @@
 from PIL import Image
+from math import abs
 
 class IMG:
 	def __init__(self):
@@ -49,11 +50,68 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):
 		newgxR = newgxR - pow(2,k)
 	else:
 		newgxR = newgxR
-# Same for blue n green
+    #blue
+    if d> pow(2,k-1) and 0<= newgxB + pow(2,k) and newgxB + pow(2,k)<=255:
+		newgxB = newgxB + pow(2,k)
+	elif d< -pow(2,k-1) and 0<= newgxB - pow(2,k) and newgxB - pow(2,k)<=255:
+		newgxB = newgxB - pow(2,k)
+	else:
+		newgxB = newgxB
+    #green
+    if d> pow(2,k-1) and 0<= newgxG + pow(2,k) and newgxG + pow(2,k)<=255:
+		newgxG = newgxG + pow(2,k)
+	elif d< -pow(2,k-1) and 0<= newgxG - pow(2,k) and newgxG - pow(2,k)<=255:
+		newgxG = newgxG - pow(2,k)
+	else:
+		newgxG = newgxG
 
+    gurR,gurB,gurG = getPixelValue(gur)
+    d1_red=abs(newgxR-gurR)
+    d1_green=abs(newgxG-gurG)
+    d1_blue=abs(newgxB-gurB)
 
+    gblR,gblB,gblG = getPixelValue(gbl)
+    d2_red=abs(newgxR-gblR)
+    d2_green=abs(newgxG-gblG)
+    d2_blue=abs(newgxB-gblB)
 
+    gbrR,gbrB,gbrG = getPixelValue(gbr)
+    d3_red=abs(newgxR-gbrR)
+    d3_green=abs(newgxG-gbrG)
+    d3_blue=abs(newgxB-gbrB)
 
+    t1_red=no_of_bits_to_hide(d1_red)
+    t1_blue=no_of_bits_to_hide(d1_blue)
+    t1_green=no_of_bits_to_hide(d1_green)
+
+    t2_red=no_of_bits_to_hide(d2_red)
+    t2_blue=no_of_bits_to_hide(d2_blue)
+    t2_green=no_of_bits_to_hide(d2_green)
+
+    t3_red=no_of_bits_to_hide(d3_red)
+    t3_blue=no_of_bits_to_hide(d3_blue)
+    t3_green=no_of_bits_to_hide(d3_green)
+
+    #find lower bounds 
+    #s1, s2, s3 are decimal values taken from cover image
+    d1_red_new=l1_red+s1_red
+    d1_blue_new=l1_blue+s1_blue
+    d1_green_new=l1_green+s1_green
+
+    d2_red_new=l2_red+s2_red
+    d2_blue_new=l2_blue+s2_blue
+    d2_green_new=l2_green+s2_green
+    
+    d3_red_new=l3_red+s3_red
+    d3_blue_new=l3_blue+s3_blue
+    d3_green_new=l3_green+s3_green
+
+def no_of_bits_to_hide(value):
+    #using quantisation range for varaint 1
+    if value in range(64):
+        return 3
+    else:
+        return 4
 #converts plaintext to 8-bit binary format
 def convert_to_binary(data):
 	data_binary=' '.join(format(ord(x), '08b') for x in data)
