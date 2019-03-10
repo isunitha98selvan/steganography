@@ -79,7 +79,7 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel b
 	d2_blue=abs(newgxB-gblB)
 
 	gbrR,gbrG,gbrB = getPixelValue(gbr)
-	CVbrR,CVbrG,CVbrB = getPixelValue(cover_pixel_block[1][1])
+	CVbrR,CVbrG,CVbrB = getPigbrRxelValue(cover_pixel_block[1][1])
 	d3_red=abs(newgxR-gbrR)
 	d3_green=abs(newgxG-gbrG)
 	d3_blue=abs(newgxB-gbrB)
