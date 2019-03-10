@@ -31,7 +31,7 @@ def set_bit(oldByte, newBit):
 	temp[-1] = new_bit
 	return int(''.join(temp),2)		
 
-def embedding(carrier_pixel_block,cover_pixel_block,k=3):
+def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel block is a list of list with the inner list having the RGB values
 	gx = carrier_pixel_block[0][0]
 	gur = carrier_pixel_block[0][1]
 	gbl = carrier_pixel_block[1][0]
@@ -67,16 +67,19 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):
 		newgxG = newgxG
 
 	gurR,gurG,gurB = getPixelValue(gur)
+	CVurR,CVurG,CVurB = getPixelValue(cover_pixel_block[0][1])
 	d1_red=abs(newgxR-gurR)
 	d1_green=abs(newgxG-gurG)
 	d1_blue=abs(newgxB-gurB)
 
 	gblR,gblG,gblB = getPixelValue(gbl)
+	CVblR,CVblG,CVblB = getPixelValue(cover_pixel_block[1][0])
 	d2_red=abs(newgxR-gblR)
 	d2_green=abs(newgxG-gblG)
 	d2_blue=abs(newgxB-gblB)
 
 	gbrR,gbrG,gbrB = getPixelValue(gbr)
+	CVbrR,CVbrG,CVbrB = getPixelValue(cover_pixel_block[1][1])
 	d3_red=abs(newgxR-gbrR)
 	d3_green=abs(newgxG-gbrG)
 	d3_blue=abs(newgxB-gbrB)
@@ -85,34 +88,34 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):
 	t1_blue=no_of_bits_to_hide(d1_blue)
 	t1_green=no_of_bits_to_hide(d1_green)
 
-	l1_red = int(format(gur[0], '08b')[-t1_red:])
-	s1_red = int(format(cover_pixel_block[0][1][0],'08b')[-t1_red:])
-	l1_green = int(format(gur[1], '08b')[-t1_green:])
-	s1_green = int(format(cover_pixel_block[0][1][1],'08b')[-t1_green:])
-	l1_blue = int(format(gur[2], '08b')[-t1_blue:])
-	s1_blue = int(format(cover_pixel_block[0][1][2],'08b')[-t1_blue:])
+	l1_red = int(format(gurR, '08b')[-t1_red:])
+	s1_red = int(format(CVurR,'08b')[-t1_red:])
+	l1_green = int(format(gurG, '08b')[-t1_green:])
+	s1_green = int(format(CVurG,'08b')[-t1_green:])
+	l1_blue = int(format(gurB, '08b')[-t1_blue:])
+	s1_blue = int(format(CVurB,'08b')[-t1_blue:])
 
 	t2_red=no_of_bits_to_hide(d2_red)
 	t2_blue=no_of_bits_to_hide(d2_blue)
 	t2_green=no_of_bits_to_hide(d2_green)
 
-	l2_red = int(format(gbl[0], '08b')[-t2_red:])
-	s2_red = int(format(cover_pixel_block[1][0][0],'08b')[-t2_red:])
-	l2_green = int(format(gbl[1], '08b')[-t2_green:])
-	s2_green = int(format(cover_pixel_block[1][0][1],'08b')[-t2_green:])
-	l2_blue = int(format(gbl[2], '08b')[-t2_blue:])
-	s2_blue = int(format(cover_pixel_block[1][0][2],'08b')[-t2_blue:])
+	l2_red = int(format(gblR, '08b')[-t2_red:])
+	s2_red = int(format(CVblR,'08b')[-t2_red:])
+	l2_green = int(format(gblG, '08b')[-t2_green:])
+	s2_green = int(format(CVblG,'08b')[-t2_green:])
+	l2_blue = int(format(gblB, '08b')[-t2_blue:])
+	s2_blue = int(format(CVblB,'08b')[-t2_blue:])
 
 	t3_red=no_of_bits_to_hide(d3_red)
 	t3_blue=no_of_bits_to_hide(d3_blue)
 	t3_green=no_of_bits_to_hide(d3_green)
 
-	l3_red = int(format(gbr[0], '08b')[-t3_red:])
-	s3_red = int(format(cover_pixel_block[1][1][0],'08b')[-t3_red:])
-	l3_green = int(format(gbr[1], '08b')[-t3_green:])
-	s3_green = int(format(cover_pixel_block[1][1][1],'08b')[-t3_green:])
-	l3_blue = int(format(gbr[2], '08b')[-t3_blue:])
-	s3_blue = int(format(cover_pixel_block[1][1][2],'08b')[-t3_blue:])
+	l3_red = int(format(gbrR, '08b')[-t3_red:])
+	s3_red = int(format(CVbrR,'08b')[-t3_red:])
+	l3_green = int(format(gbrG, '08b')[-t3_green:])
+	s3_green = int(format(CVbrG,'08b')[-t3_green:])
+	l3_blue = int(format(gbrB, '08b')[-t3_blue:])
+	s3_blue = int(format(CVbrB,'08b')[-t3_blue:])
 
 	d1_red_new=l1_red+s1_red
 	d1_blue_new=l1_blue+s1_blue
