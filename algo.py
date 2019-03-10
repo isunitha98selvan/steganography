@@ -1,6 +1,6 @@
 from PIL import Image
 from math import abs
-
+import numpy as np
 class IMG:
 	def __init__(self):
 		self.carrier_image=None
@@ -25,11 +25,19 @@ class IMG:
 		if size_carrier*3 <=2* size_cover:
 			print("Unable to fit data in carrier image!")
 
+def image_to_matrix(file_name):
+	img = Image.open(file_name,'r')
+	arr = np.array(img)
+	return arr.tolist()
+
 def set_bit(oldByte, newBit):
 
 	temp = list(bin(old_byte))
 	temp[-1] = new_bit
 	return int(''.join(temp),2)		
+
+def getPixelValue(rgbList):
+	return rgbList[0],rgbList[1],rgbList[2]
 
 def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel block is a list of list with the inner list having the RGB values
 	gx = carrier_pixel_block[0][0]
@@ -218,9 +226,11 @@ def convert_to_binary(data):
 
 def main():
 	#carrier image
-	image_name=input("Enter name of the image: ")
-	x=IMG()
-	x.open_image(image_name)
+	carrier_image_name=input("Enter the file name of the carrier image: ")
+	carrier_image_matrix = image_to_matrix(carrier_image_name)
+	cover_image_name=input("Enter the file name of the cover image: ")
+	cover_image_matrix = image_to_matrix(cover_image_name)
+	
 	# img=Image.open(image_name,'r')
 	# width,height=img.size
 	# new_img=img.copy() 
