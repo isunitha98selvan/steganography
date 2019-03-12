@@ -73,12 +73,7 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 	new_gx = ''.join(bin_gx)		
 	L = int(format(gx,'08b')[-3:])
 	S = int(format(new_gx,'08b')[-3:])
-	# L= int(format(gx, '08b')[-1])
-	# S= int(format(cv,'08b')[-1])
-	# print(L,S)
-	# newgx = set_bit(gx,int(format(cv, '08b')[-1]))
-	# newgxB = set_bit(gxB,int(format(cvB, '08b')[-1]))
-	# newgxG = set_bit(gxG,int(format(cvG, '08b')[-1]))
+
 	d = L-S
 	
 	if d> pow(2,k-1) and 0<= newgx + pow(2,k) and newgx + pow(2,k)<=255:
