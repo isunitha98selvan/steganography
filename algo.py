@@ -226,7 +226,14 @@ def no_of_bits_to_hide(value):
 		return 3
 	else:
 		return 4
-		
+
+def array2PIL(arr, size):
+    mode = 'RGB'
+    arr = arr.reshape(arr.shape[0]*arr.shape[1], arr.shape[2])
+    if len(arr[0]) == 3:
+        arr = np.c_[arr, 255*np.ones((len(arr),1), np.uint8)]
+    return Image.frombuffer(mode, size, arr.tostring(), 'raw', mode, 0, 1)
+
 #converts plaintext to 8-bit binary format
 def convert_to_binary(data):
 	data_binary=' '.join(format(ord(x), '08b') for x in data)
@@ -237,9 +244,10 @@ def main():
 	#carrier image
 	# carrier_image_name=input("Enter the file name of the carrier image: ")
 	carrier_image_name='food.jpg'
+	img = Image.open('food.jpg','r')
 	carrier_image_matrix = image_to_matrix(carrier_image_name)
 	print('Length: ' +str(len(carrier_image_matrix)) +'  width: ' + str(len(carrier_image_matrix[0])))
-	final_image_matrix = carrier_image_matrix
+	final_image_matrix = np.zeros((len(carrier_image_matrix), len(carrier_image_matrix[0]), 3), dtype=np.uint8)
 
 	# cover_image_name=input("Enter the file name of the cover image: ")
 	cover_image_name='pic2.jpeg'
@@ -264,8 +272,17 @@ def main():
 			final_image_matrix[i][j+1] = temp3[0][1]
 			final_image_matrix[i+1][j] = temp3[1][0]
 			final_image_matrix[i+1][j+1] = temp3[1][1]
-			
-	new_im = Image.fromarray(np.array(final_image_matrix))
+	c=0
+	for i in range(len(cover_image_matrix),len(carrier_image_matrix)):
+		for j in range(len(cover_image_matrix[0]),len(carrier_image_matrix[0])):
+			final_image_matrix[i][j] = carrier_image_matrix[i][j]
+			if c==0:
+				print(final_image_matrix[i][j])
+				c=1
+
+	# print(carrier_image_matrix[0])
+	# print(final_image_matrix[0])
+	new_im = array2PIL(final_image_matrix,img.size)
 	new_im.save('Try.jpg')
 	# img=Image.open(image_name,'r')
 	# width,height=img.size
