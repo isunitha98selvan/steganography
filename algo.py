@@ -1,6 +1,6 @@
 from PIL import Image
-from math import abs
 import numpy as np
+
 class IMG:
 	def __init__(self):
 		self.carrier_image=None
@@ -25,6 +25,11 @@ class IMG:
 		if size_carrier*3 <=2* size_cover:
 			print("Unable to fit data in carrier image!")
 
+def abs(x):
+	if x>=0:
+		return x
+	return -1*x
+
 def image_to_matrix(file_name):
 	img = Image.open(file_name,'r')
 	arr = np.array(img)
@@ -32,9 +37,11 @@ def image_to_matrix(file_name):
 
 def set_bit(oldByte, newBit):
 
-	temp = list(bin(old_byte))
-	temp[-1] = new_bit
-	return int(''.join(temp),2)		
+	temp = list(bin(oldByte))
+	temp[-1] = str(newBit)
+	
+	return int(''.join(temp),2)
+
 
 def getPixelValue(rgbList):
 	return rgbList[0],rgbList[1],rgbList[2]
@@ -44,6 +51,7 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel b
 	gur = carrier_pixel_block[0][1]
 	gbl = carrier_pixel_block[1][0]
 	gbr = carrier_pixel_block[1][1]
+	
 	gxR,gxG,gxB = getPixelValue(gx) #Assuming it's all integers
 	cvR,cvG,cvB = getPixelValue(cover_pixel_block[0][0])
 	L = int(format(gxR, '08b')[-1] + format(gxG, '08b')[-1] + format(gxB, '08b')[-1])
@@ -87,7 +95,7 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel b
 	d2_blue=abs(newgxB-gblB)
 
 	gbrR,gbrG,gbrB = getPixelValue(gbr)
-	CVbrR,CVbrG,CVbrB = getPigbrRxelValue(cover_pixel_block[1][1])
+	CVbrR,CVbrG,CVbrB = getPixelValue(cover_pixel_block[1][1])
 	d3_red=abs(newgxR-gbrR)
 	d3_green=abs(newgxG-gbrG)
 	d3_blue=abs(newgxB-gbrB)
@@ -210,6 +218,7 @@ def embedding(carrier_pixel_block,cover_pixel_block,k=3):  #Assuming the pixel b
 		newgblB = new3gblB
 
 	stego_pixel_block = [[newgxR,newgxG,newgxB],[newgurR,newgurG,newgurB],[newgblR,newgblG,newgblB],[newgbrR,newgbrG,newgbrB]]
+	return stego_pixel_block
 
 def no_of_bits_to_hide(value):
 	#using quantisation range for variant 1
@@ -221,16 +230,43 @@ def no_of_bits_to_hide(value):
 #converts plaintext to 8-bit binary format
 def convert_to_binary(data):
 	data_binary=' '.join(format(ord(x), '08b') for x in data)
-	print(data_binary)
+	# print(data_binary)
 	return data_binary
 
 def main():
 	#carrier image
-	carrier_image_name=input("Enter the file name of the carrier image: ")
+	# carrier_image_name=input("Enter the file name of the carrier image: ")
+	carrier_image_name='food.jpg'
 	carrier_image_matrix = image_to_matrix(carrier_image_name)
-	cover_image_name=input("Enter the file name of the cover image: ")
+	print('Length: ' +str(len(carrier_image_matrix)) +'  width: ' + str(len(carrier_image_matrix[0])))
+	final_image_matrix = carrier_image_matrix
+
+	# cover_image_name=input("Enter the file name of the cover image: ")
+	cover_image_name='pic2.jpeg'
 	cover_image_matrix = image_to_matrix(cover_image_name)
+	# print(cover_image_matrix)
+	print('Length: ' +str(len(cover_image_matrix)) +'  width: ' + str(len(cover_image_matrix[0])))
+	if len(carrier_image_matrix)*3 <=2* len(cover_image_matrix) or len(carrier_image_matrix[0])*3 <=2* len(cover_image_matrix[0]) :
+		print("Unable to fit data in carrier image!")
+	else:
+		print("Able to fit data in carrier image!")
 	
+	for i in range(0,len(cover_image_matrix),2):
+				
+		if len(cover_image_matrix[i])!= len(cover_image_matrix[i+1]) or len(carrier_image_matrix[i])!=len(carrier_image_matrix[i+1]):
+			print('error')
+			break
+		for j in range(0,len(cover_image_matrix[i]),2):
+			temp1 = [[cover_image_matrix[i][j],cover_image_matrix[i][j+1]],[cover_image_matrix[i+1][j],cover_image_matrix[i+1][j+1]]]
+			temp2 = [[carrier_image_matrix[i][j],carrier_image_matrix[i][j+1]],[carrier_image_matrix[i+1][j],carrier_image_matrix[i+1][j+1]]]
+			temp3 = embedding(temp2,temp1)
+			final_image_matrix[i][j] = temp3[0][0]
+			final_image_matrix[i][j+1] = temp3[0][1]
+			final_image_matrix[i+1][j] = temp3[1][0]
+			final_image_matrix[i+1][j+1] = temp3[1][1]
+			
+	new_im = Image.fromarray(np.array(final_image_matrix))
+	new_im.save('Try.jpg')
 	# img=Image.open(image_name,'r')
 	# width,height=img.size
 	# new_img=img.copy() 
@@ -242,9 +278,9 @@ def main():
 	
 	#check if carrier image is big enough
 
-	hide_seek(new_img,data)
+	# hide_seek(new_img,data)
 
-	new_img.save('encrypted.jpg')
+	# new_img.save('encrypted.jpg')
 
 if __name__=='__main__':
 	main()
