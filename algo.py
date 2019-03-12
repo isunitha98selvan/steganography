@@ -297,6 +297,33 @@ def main():
 		final_image_matrix[i+1][j+1] = temp2[1][1]
 
 	return
+		if len(cover_image_matrix[i])!= len(cover_image_matrix[i+1]) or len(carrier_image_matrix[i])!=len(carrier_image_matrix[i+1]):
+			print('error')
+			break
+		for j in range(0,len(cover_image_matrix[i]),2):
+			temp1 = [[cover_image_matrix[i][j],cover_image_matrix[i][j+1]],[cover_image_matrix[i+1][j],cover_image_matrix[i+1][j+1]]]
+			temp2 = [[carrier_image_matrix[i][j],carrier_image_matrix[i][j+1]],[carrier_image_matrix[i+1][j],carrier_image_matrix[i+1][j+1]]]
+			temp3 = embedding(temp2,temp1)
+			final_image_matrix[i][j] = temp3[0][0]
+			final_image_matrix[i][j+1] = temp3[0][1]
+			final_image_matrix[i+1][j] = temp3[1][0]
+			final_image_matrix[i+1][j+1] = temp3[1][1]	
+	
+	# width=str(len(cover_image_matrix[0]))
+	# print(width)
+	# data = []
+	# final_image=[]
+	# count=0
+	# for i in final_image_matrix:
+	# 	count+=1
+	# 	data.append(i)
+	# 	if count==width:
+	# 		final_image.append(data)
+	# 		data=[]
+	# 		print(final_image)
+	# print(final_image)
+	# new_im = Image.fromarray(final_image,'RGB')
+	# 		final_image_matrix[i+1][j+1] = temp3[1][1]
 	c=0
 	for i in range(len(cover_image_matrix)):
 		for j in range(len(cover_image_matrix[0]),len(carrier_image_matrix[0])):
@@ -314,6 +341,15 @@ def main():
 	img.save('Attempt1.png')
 
 	print('Done')
+			if c==0:
+				print(final_image_matrix[i][j])
+				c=1
+
+	# print(carrier_image_matrix[0])
+	# print(final_image_matrix[0])
+	new_im = array2PIL(final_image_matrix,img.size)
+	new_im.save('Try.jpg')
+	new_im.show()
 	# img=Image.open(image_name,'r')
 	# width,height=img.size
 	# new_img=img.copy() 
