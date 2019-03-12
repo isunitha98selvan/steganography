@@ -263,10 +263,24 @@ def main():
 			final_image_matrix[i][j] = temp3[0][0]
 			final_image_matrix[i][j+1] = temp3[0][1]
 			final_image_matrix[i+1][j] = temp3[1][0]
-			final_image_matrix[i+1][j+1] = temp3[1][1]
-			
-	new_im = Image.fromarray(np.array(final_image_matrix))
+			final_image_matrix[i+1][j+1] = temp3[1][1]	
+	
+	# width=str(len(cover_image_matrix[0]))
+	# print(width)
+	# data = []
+	# final_image=[]
+	# count=0
+	# for i in final_image_matrix:
+	# 	count+=1
+	# 	data.append(i)
+	# 	if count==width:
+	# 		final_image.append(data)
+	# 		data=[]
+	# 		print(final_image)
+	# print(final_image)
+	new_im = Image.fromarray(final_image,'RGB')
 	new_im.save('Try.jpg')
+	new_im.show()
 	# img=Image.open(image_name,'r')
 	# width,height=img.size
 	# new_img=img.copy() 
