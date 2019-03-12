@@ -36,6 +36,8 @@ def image_to_matrix(file_name):
 	img = Image.open(file_name,'r')
 	arr = np.array(img)
 	return arr.tolist()
+def rgb2gray(rgb):
+    return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
 def set_bit(oldByte, newBit):
 
@@ -241,13 +243,6 @@ def no_of_bits_to_hide(value):
 	else:
 		return 4
 
-def array2PIL(arr, size):
-    mode = 'RGB'
-    arr = arr.reshape(arr.shape[0]*arr.shape[1], arr.shape[2])
-    if len(arr[0]) == 3:
-        arr = np.c_[arr, 255*np.ones((len(arr),1), np.uint8)]
-    return Image.frombuffer(mode, size, arr.tostring(), 'raw', mode, 0, 1)
-
 #converts plaintext to 8-bit binary format
 def convert_to_binary(data):
 	data_binary=' '.join(format(ord(x), '08b') for x in data)
@@ -257,28 +252,46 @@ def convert_to_binary(data):
 def main():
 	#carrier image
 	# carrier_image_name=input("Enter the file name of the carrier image: ")
+
 	carrier_image_name='food.jpg'
-	img=cv2.imread(carrier_image_name)
-	img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-	cv2.imwrite('greyscale.jpg',img)
-	# img =  io.imread(carrier_image_name, as_grey=True)
-	# grey = Image.fromarray(img)
-	# grey.save('GREY.png')
-	print(img)
+	grey_img=cv2.imread(carrier_image_name)
+	carrier_grey_image_matrix = cv2.cvtColor(grey_img,cv2.COLOR_BGR2GRAY)
+	cv2.imwrite('greyscale1.jpg',carrier_grey_image_matrix)
 	carrier_image_matrix = image_to_matrix(carrier_image_name)
-	print('Length: ' +str(len(carrier_image_matrix)) +'  width: ' + str(len(carrier_image_matrix[0])))
+	print('Carrier image:')
+	print('Length: ' +str(len(carrier_grey_image_matrix)) +'  width: ' + str(len(carrier_grey_image_matrix[0])))
+	
 	final_image_matrix = np.zeros((len(carrier_image_matrix), len(carrier_image_matrix[0]), 3), dtype=np.uint8)
 
 	# cover_image_name=input("Enter the file name of the cover image: ")
-	cover_image_name='pic2.jpeg'
+	cover_image_name='food2.jpeg'
 	cover_image_matrix = image_to_matrix(cover_image_name)
+	img2 = cv2.imread(cover_image_name)
+	cover_grey_image_matrix = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+	cv2.imwrite('greyscale2.jpg',cover_grey_image_matrix)
+	
 	# print(cover_image_matrix)
-	print('Length: ' + str(len(cover_image_matrix)) +'  width: ' + str(len(cover_image_matrix[0])))
-	if len(carrier_image_matrix)*3 <=2* len(cover_image_matrix) or len(carrier_image_matrix[0])*3 <=2* len(cover_image_matrix[0]) :
+	print('Cover image:')
+	print('Length: ' +str(len(cover_grey_image_matrix)) +'  width: ' + str(len(cover_grey_image_matrix[0])))
+	if len(carrier_image_matrix)*3 <=2* len(cover_image_matrix) or len(carrier_image_matrix[0])*3 <=2* len(cover_image_matrix[0]):
 		print("Unable to fit data in carrier image!")
 	else:
 		print("Able to fit data in carrier image!")
+
 	
+	# for i in range(0,len(cover_image_matrix),2):
+				
+	# 	if len(cover_image_matrix[i])!= len(cover_image_matrix[i+1]) or len(carrier_image_matrix[i])!=len(carrier_image_matrix[i+1]):
+	# 		print('error')
+	# 		break
+	# 	for j in range(0,len(cover_image_matrix[i]),2):
+	# 		temp1 = [[cover_image_matrix[i][j],cover_image_matrix[i][j+1]],[cover_image_matrix[i+1][j],cover_image_matrix[i+1][j+1]]]
+	# 		temp2 = [[carrier_image_matrix[i][j],carrier_image_matrix[i][j+1]],[carrier_image_matrix[i+1][j],carrier_image_matrix[i+1][j+1]]]
+	# 		temp3 = embedding(temp2,temp1)
+	# 		final_image_matrix[i][j] = temp3[0][0]
+	# 		final_image_matrix[i][j+1] = temp3[0][1]
+	# 		final_image_matrix[i+1][j] = temp3[1][0]
+	# 		final_image_matrix[i+1][j+1] = temp3[1][1]
 	row_cover = col_cover = 0
 	i=j=0
 	while i<len(cover_grey_image_matrix) and j<len(cover_grey_image_matrix[0]):
@@ -296,6 +309,18 @@ def main():
 		final_image_matrix[i+1][j] = temp2[1][0]
 		final_image_matrix[i+1][j+1] = temp2[1][1]
 
+	return
+		if len(cover_image_matrix[i])!= len(cover_image_matrix[i+1]) or len(carrier_image_matrix[i])!=len(carrier_image_matrix[i+1]):
+			print('error')
+			break
+		for j in range(0,len(cover_image_matrix[i]),2):
+			temp1 = [[cover_image_matrix[i][j],cover_image_matrix[i][j+1]],[cover_image_matrix[i+1][j],cover_image_matrix[i+1][j+1]]]
+			temp2 = [[carrier_image_matrix[i][j],carrier_image_matrix[i][j+1]],[carrier_image_matrix[i+1][j],carrier_image_matrix[i+1][j+1]]]
+			temp3 = embedding(temp2,temp1)
+			final_image_matrix[i][j] = temp3[0][0]
+			final_image_matrix[i][j+1] = temp3[0][1]
+			final_image_matrix[i+1][j] = temp3[1][0]
+			final_image_matrix[i+1][j+1] = temp3[1][1]	
 	
 	# width=str(len(cover_image_matrix[0]))
 	# print(width)
@@ -312,10 +337,25 @@ def main():
 	# print(final_image)
 	new_im = Image.fromarray(final_image,'RGB')
 	final_image_matrix[i+1][j+1] = temp3[1][1]
+	# new_im = Image.fromarray(final_image,'RGB')
+	# 		final_image_matrix[i+1][j+1] = temp3[1][1]
 	c=0
-	for i in range(len(cover_image_matrix),len(carrier_image_matrix)):
+	for i in range(len(cover_image_matrix)):
 		for j in range(len(cover_image_matrix[0]),len(carrier_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_image_matrix[i][j]
+
+	for i in range(len(cover_image_matrix),len(carrier_image_matrix)):
+		for j in range(len(carrier_image_matrix[0])):
+			final_image_matrix[i][j] = carrier_image_matrix[i][j]
+
+	print(final_image_matrix)
+	# print(carrier_image_matrix[0][0])
+	# new_im = array2PIL(final_image_matrix,img.size)
+	# new_im.save('Attempt1.jpg')
+	img = Image.fromarray(final_image_matrix, 'RGB')
+	img.save('Attempt1.png')
+
+	print('Done')
 			if c==0:
 				c=1
 
