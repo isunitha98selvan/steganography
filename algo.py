@@ -54,9 +54,7 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 	gur = carrier_pixel_block[0][1]
 	gbl = carrier_pixel_block[1][0]
 	gbr = carrier_pixel_block[1][1]
-	
-	gxR,gxG,gxB = getPixelValue(gx) #Assuming it's all integers
-	cvR,cvG,cvB = getPixelValue(cover_pixel_block[0][0])
+	# redo
 	L = int(format(gxR, '08b')[-1] + format(gxG, '08b')[-1] + format(gxB, '08b')[-1])
 	S = int(format(cvR, '08b')[-1] + format(cvG, '08b')[-1] + format(cvB, '08b')[-1])
 	newgxR = set_bit(gxR,int(format(cvR, '08b')[-1]))
@@ -267,7 +265,7 @@ def main():
 	else:
 		print("Able to fit data in carrier image!")
 
-	row_cover = col_cover = 0
+	
 	# for i in range(0,len(cover_image_matrix),2):
 				
 	# 	if len(cover_image_matrix[i])!= len(cover_image_matrix[i+1]) or len(carrier_image_matrix[i])!=len(carrier_image_matrix[i+1]):
@@ -281,7 +279,7 @@ def main():
 	# 		final_image_matrix[i][j+1] = temp3[0][1]
 	# 		final_image_matrix[i+1][j] = temp3[1][0]
 	# 		final_image_matrix[i+1][j+1] = temp3[1][1]
-
+	row_cover = col_cover = 0
 	i=j=0
 	while i<len(cover_grey_image_matrix) and j<len(cover_grey_image_matrix[0]):
 		temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
