@@ -36,9 +36,9 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 
 	d = L-S # Computing the value of d
 	
-	if d> pow(2,k-1) and 0<= new_gx + pow(2,k) and new_gx + pow(2,k)<=255:  # Check to see if area is smooth
+	if d> pow(2,k-1) and 0<= new_gx + pow(2,k) and new_gx + pow(2,k)<=255:  # To get the optimized value of gx
 		new_gx = new_gx + pow(2,k)
-	elif d< -pow(2,k-1) and 0<= new_gx - pow(2,k) and new_gx - pow(2,k)<=255: # Check to see if area is an edge
+	elif d< -pow(2,k-1) and 0<= new_gx - pow(2,k) and new_gx - pow(2,k)<=255:
 		new_gx = new_gx - pow(2,k)
 	else:
 		new_gx = new_gx
@@ -82,6 +82,7 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 	new2gbl = new_gx - d3_new
 	new3gbl = new_gx + d3_new
 	
+	# To obtain the optimized value for each block
 	if abs(gur - new2gur) < abs(gur - new3gur) and 0<=new2gur and new2gur<=255: 
 		new_gur = new2gur
 	else:
@@ -116,36 +117,45 @@ def main():
 	#carrier image
 	
 	carrier_image_name=input("Enter the file name of the carrier image: ")
-	
+	if carrier_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
+		print('Invalid file type!')
+		print('\nProgram terminated')
+		return
 	grey_img=cv2.imread(carrier_image_name)  # Converting the RGB carrier image to grey scale
 	carrier_grey_image_matrix = cv2.cvtColor(grey_img,cv2.COLOR_BGR2GRAY) #storing the image as a matrix
 
 	cv2.imwrite('greyscaleCarrierImage.jpg',carrier_grey_image_matrix)
 	
-	print('Carrier image:')
+	print('\nCarrier image:')
 	print('Length: ' +str(len(carrier_grey_image_matrix)) +'  width: ' + str(len(carrier_grey_image_matrix[0])))
+	print('\n')
 	
 	# Creating the final image matrix for storing the secret data in carrier
 	final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0]), 3), dtype=np.uint8)
 
 	cover_image_name=input("Enter the file name of the cover image: ")
+	if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
+		print('Invalid file type!')
+		print('\nProgram terminated')
+		return
 	img2 = cv2.imread(cover_image_name)
 	cover_grey_image_matrix = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
 	cv2.imwrite('greyscale2.jpg',cover_grey_image_matrix)
 	
 	# print(cover_image_matrix)
-	print('Cover image:')
+	print('\nCover image:')
 	print('Length: ' +str(len(cover_grey_image_matrix)) +'  width: ' + str(len(cover_grey_image_matrix[0])))
-
+	print('\n')
+	print('Checking whether the cover image can be hid in the carrier image')
 	#Check to see whether the secret data can be hid in the carrier image
 	if len(carrier_grey_image_matrix)*3 <=2* len(cover_grey_image_matrix) or len(carrier_grey_image_matrix[0])*3 <=2* len(cover_grey_image_matrix[0]):
-		print("Unable to fit data in carrier image!")
+		print("Unable to fit data in carrier image!\n")
 	else:
-		print("Able to fit data in carrier image!")
+		print("Able to fit data in carrier image!\n")
 
 	row_cover = col_cover = 0
 	i=j=0
-
+	print('Performing the embedding procedure........\n')
 	while i<len(cover_grey_image_matrix) and j<len(cover_grey_image_matrix[0]): #Traversing the cover image matrix
 		# Extraction of 2x2 non-overlapping matrix
 		temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
@@ -165,7 +175,7 @@ def main():
 		final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
 		final_image_matrix[i+1][j] = temp2[1][0]
 		final_image_matrix[i+1][j+1] = temp2[1][1]
-	
+	print('Embedding procedure completed!\n')
 	for i in range(len(cover_grey_image_matrix)): # Traversing the block to right of the cover image in the carrier image
 		for j in range(len(cover_grey_image_matrix[0]),len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
@@ -173,9 +183,9 @@ def main():
 	for i in range(len(cover_grey_image_matrix),len(carrier_grey_image_matrix)): # Traversing the remaining region of the carrier matrix
 		for j in range(len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
-
+	print('Storing the result in Result.png\n')
 	img = Image.fromarray(final_image_matrix, 'RGB') # Storing the final image matrix as a grey scale image
 	img.save('Result.png')
-
+	print('Done!')
 if __name__=='__main__':
 	main()
