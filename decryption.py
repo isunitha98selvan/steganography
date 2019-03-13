@@ -1,4 +1,6 @@
 #code for decryption
+import cv2
+import numpy as np
 
 def check_range(value):
     if value in range(64):
@@ -7,54 +9,44 @@ def check_range(value):
         return 4
 
 def decrypt(carrier_pixel_block):
-    gx=carrier_pixel_block[0][0]
-    gxR,gxB,gxG=getPixelValue(gx)
+    gx  = carrier_pixel_block[0][0]
+    gur = carrier_pixel_block[0][1]
+    gbl = carrier_pixel_block[1][0]
+    gbr = carrier_pixel_block[1][1]
 
-    d1_red=abs(gurR-gxR)
-    d1_blue=abs(gurB-gxB)
-    d1_green=abs(gurG-gxG)
+    bin_gx=list(format(gx,'08b'))
 
-    d2_red=abs(gbrR-gxR)
-    d2_blue=abs(gbrB-gxB)
-    d2_green=abs(gbrG-gxG)
-
-    d3_red=abs(gblR-gxR)
-    d3_blue=abs(gblB-gxB)
-    d3_green=abs(gblG-gxG)
-
-    t1_red=check_range(d1_red)
-    t1_blue=check_range(d1_blue)
-    t1_green=check_range(d1_green)
-
-    t2_red=check_range(d2_red)
-    t2_blue=check_range(d2_blue)
-    t2_green=check_range(d2_green)
-
-    t3_red=check_range(d3_red)
-    t3_blue=check_range(d3_blue)
-    t3_green=check_range(d3_green)
+    d1=abs(gur-gx)
+    d2=abs(gbr-gx)
+    d3=abs(gbl-gx)
+   
+    t1=check_range(d1)
+    t2=check_range(d2)
+    t3=check_range(d3)
 
     #calculate lower bound
-    l1_red = int(format(gurR, '08b')[-t1_red:])
-	l1_green = int(format(gurG, '08b')[-t1_green:])
-	l1_blue = int(format(gurB, '08b')[-t1_blue:])
+    l1 = int(format(gur, '08b')[-t1:])
+    l2 = int(format(gbl, '08b')[-t2:])
+    l3 = int(format(gbr, '08b')[-t3:])
 
-    l2_red = int(format(gblR, '08b')[-t2_red:])
-	l2_green = int(format(gblG, '08b')[-t2_green:])
-	l2_blue = int(format(gblB, '08b')[-t2_blue:])
+    s1 = d1-l1
+    s2 = d2-l2
+    s3 = d3+l3
 
-    l3_red = int(format(gbrR, '08b')[-t3_red:])
-	l3_green = int(format(gbrG, '08b')[-t3_green:])
-	l3_blue = int(format(gbrB, '08b')[-t3_blue:])
+    bin_s1=list(format(s1,'08b'))
+    bin_s2=list(format(s2,'08b'))
+    bin_s3=list(format(s3,'08b'))
 
-    s1_red=d1_red+l1_red
-    s1_blue=d1_blue+l1_blue
-    s1_green=d1_green+l1_green
 
-    s2_red=d2_red+l2_red
-    s2_blue=d2_blue+l2_blue
-    s2_green=d2_green+l2_green
+def main():
+    encrypted_image_name='Attempt1.png'
+    img=cv2.imread(encrypted_image_name)
+    #print(img)
+    encrypted_image_matrix = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    print('Carrier image:')
+    print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
+    print(encrypted_image_matrix)
+    decrypt(encrypted_image_matrix)
 
-    s3_red=d3_red+l3_red
-    s3_blue=d3_blue+l3_blue
-    s3_green=d3_green+l3_green
+if __name__=='__main__':
+    main()
