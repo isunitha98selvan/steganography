@@ -36,9 +36,9 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 
 	d = L-S # Computing the value of d
 	
-	if d> pow(2,k-1) and 0<= new_gx + pow(2,k) and new_gx + pow(2,k)<=255:  # Check to see if area is smooth
+	if d> pow(2,k-1) and 0<= new_gx + pow(2,k) and new_gx + pow(2,k)<=255:  # To get the optimized value of gx
 		new_gx = new_gx + pow(2,k)
-	elif d< -pow(2,k-1) and 0<= new_gx - pow(2,k) and new_gx - pow(2,k)<=255: # Check to see if area is an edge
+	elif d< -pow(2,k-1) and 0<= new_gx - pow(2,k) and new_gx - pow(2,k)<=255:
 		new_gx = new_gx - pow(2,k)
 	else:
 		new_gx = new_gx
@@ -82,6 +82,7 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 	new2gbl = new_gx - d3_new
 	new3gbl = new_gx + d3_new
 	
+	# To obtain the optimized value for each block
 	if abs(gur - new2gur) < abs(gur - new3gur) and 0<=new2gur and new2gur<=255: 
 		new_gur = new2gur
 	else:
