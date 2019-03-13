@@ -117,7 +117,10 @@ def main():
 	#carrier image
 	
 	carrier_image_name=input("Enter the file name of the carrier image: ")
-	
+	if carrier_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
+		print('Invalid file type!')
+		print('\nProgram terminated')
+		return
 	grey_img=cv2.imread(carrier_image_name)  # Converting the RGB carrier image to grey scale
 	carrier_grey_image_matrix = cv2.cvtColor(grey_img,cv2.COLOR_BGR2GRAY) #storing the image as a matrix
 
@@ -131,6 +134,10 @@ def main():
 	final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0]), 3), dtype=np.uint8)
 
 	cover_image_name=input("Enter the file name of the cover image: ")
+	if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
+		print('Invalid file type!')
+		print('\nProgram terminated')
+		return
 	img2 = cv2.imread(cover_image_name)
 	cover_grey_image_matrix = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
 	cv2.imwrite('greyscale2.jpg',cover_grey_image_matrix)
