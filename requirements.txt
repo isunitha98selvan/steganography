@@ -1,0 +1,19 @@
+from PIL import Image
+import numpy as np
+import cv2
+
+
+To run the project, install the following dependencies:
+1. For PIL(Python Imaging Library)
+
+sudo apt-get install python3-dev libjpeg-dev libfreetype6-dev zlib1g-dev
+sudo pip3 install pil
+
+2. numpy
+sudo apt install python3-numpy
+
+3.cv2 (Computer vision library for reading and writing images)
+sudo apt-get install python3-opencv
+
+To run the project:
+python3 algo.py
