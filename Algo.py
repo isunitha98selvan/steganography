@@ -30,7 +30,7 @@ def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block i
 				
 	new_gx = ''.join(bin_gx) # Combing the list to string
 	
-	S = int(new_gx[-3:])  # Extracting the decimal value of the k-bits of the embedded gx
+	S = int(new_gx[-k:])  # Extracting the decimal value of the k-bits of the embedded gx
 
 	new_gx = int(new_gx,2) # New gx value obtained by converting from binary to decimal
 
