@@ -25,7 +25,7 @@ def decrypt(carrier_pixel_block):
     t2=check_range(d2)
     t3=check_range(d3)
 
-    #calculate lower bouembed youtube video on sitend
+    #calculate lower bound
     l1 = int(format(gur, '08b')[-t1:])
     l2 = int(format(gbl, '08b')[-t2:])
     l3 = int(format(gbr, '08b')[-t3:])
@@ -44,41 +44,36 @@ def decrypt(carrier_pixel_block):
 
 def main():
     encrypted_image_name='Result.png'
-    length = 1432
+    length = 1432 
     width  = 1439
-    secret_image = []
+    secret_image = np.zeros([length,width],dtype=int)
     img=cv2.imread(encrypted_image_name)
     #print(img) 
     encrypted_image_matrix = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    #print('Carrier image:')
-    #print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
+    print('Image:')
+    print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
     #print(encrypted_image_matrix)
     i=0
     j=0
     count=0
-    row=[]
     row_number=0
-    print(len(encrypted_image_matrix))
-    print(len(encrypted_image_matrix[0]))
-    while i<len(encrypted_image_matrix) and j<len(encrypted_image_matrix[0]): #Traversing the cover image matrix
-		# Extraction of 2x2 non-overlapping matrix
+    row_cover=col_cover=0
+    while i<length and j<width : #Traversing the cover image matrix
         temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
+        secret_image[row_cover][col_cover] = decrypt(temp)
+        col_cover+=1
+        if col_cover == width:
+            col_cover=0
+            row_cover+=1
         j+=2
-        temp2 = decrypt(temp) # Function that performs embedding is called
-        count+=1
-        row.append(temp2)
-        if count == 1432:
-            row=np.array(row,dtype="int")
-            secret_image=np.matrix(row)
-            count=0
-            row_number+=1
-            print(secret_image)
-            row=[]
-        #print(row)
-        #print(secret_image)
-        #secret_image=np.matrix(row)
-        #print(secret_image)
-        #secret_image=
-        #img = Image.fromarray(secret_image)
+        if j >= width:
+            i+=2
+            j=0
+    print(secret_image)
+    img = Image.fromarray(secret_image,'RGB')
+    img.show()
+    #print(row)
+    print(i,j)
+
 if __name__=='__main__':
     main()

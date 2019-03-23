@@ -131,7 +131,7 @@ def main():
 	print('\n')
 	
 	# Creating the final image matrix for storing the secret data in carrier
-	final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0]), 3), dtype=np.uint8)
+	final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0])), dtype=np.uint8)
 
 	cover_image_name=input("Enter the file name of the cover image: ")
 	if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
@@ -174,17 +174,17 @@ def main():
 		final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
 		final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
 		final_image_matrix[i+1][j] = temp2[1][0]
-		final_image_matrix[i+1][j+1] = temp2[1][1]
-	print('Embedding procedure completed!\n')
-	for i in range(len(cover_grey_image_matrix)): # Traversing the block to right of the cover image in the carrier image
-		for j in range(len(cover_grey_image_matrix[0]),len(carrier_grey_image_matrix[0])):
+		final_image_matrix[i+1][j+1] = temp2[1][1]TypeError: Cannot handle this data type
+	print('Embedding procedure completed!\n')TypeError: Cannot handle this data type
+	for i in range(len(cover_grey_image_matrix)): # TraTypeError: Cannot handle this data typeversing the block to right of the cover image in the carrier image
+		for j in range(len(cover_grey_image_matrix[0]),TypeError: Cannot handle this data typelen(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
 
 	for i in range(len(cover_grey_image_matrix),len(carrier_grey_image_matrix)): # Traversing the remaining region of the carrier matrix
 		for j in range(len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
 	print('Storing the result in Result.png\n')
-	img = Image.fromarray(final_image_matrix, 'RGB') # Storing the final image matrix as a grey scale image
+	img = Image.fromarray(final_image_matrix) # Storing the final image matrix as a grey scale image
 	img.save('Result.png')
 	print('Done!')
 if __name__=='__main__':
