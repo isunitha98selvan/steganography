@@ -47,16 +47,16 @@ def main():
 	
 	# secret_image = np.zeros([length,width],dtype=np.uint8)
 	img=cv2.imread(encrypted_image_name)
-	#print(img) 
+	##print(img) 
 	encrypted_image_matrix = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 	i=j=0
 	temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
-	print(temp)
-	print(decrypt(temp))
+	#print(temp)
+	#print(decrypt(temp))
 	exit()
-	print('Image:')
-	print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
-	#print(encrypted_image_matrix)
+	#print('Image:')
+	#print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
+	##print(encrypted_image_matrix)
 	i=0
 	j=0
 	count=0
@@ -78,17 +78,17 @@ def main():
 		#     secret_image=np.matrix(row)
 		#     count=0
 		#     row_number+=1
-		#     #print(secret_image)
+		#     ##print(secret_image)
 		#     row=[]
-	# print(row)
-	# print(secret_image)
+	# #print(row)
+	# #print(secret_image)
 	# secret_image=np.matrix(row)
-	print(secret_image)
-	print(len(secret_image))
+	#print(secret_image)
+	#print(len(secret_image))
 	img = Image.fromarray(secret_image)
 	img.show()
-	#print(row)
-	print(i,j)
+	##print(row)
+	#print(i,j)
 
 if __name__=='__main__':
 	main()

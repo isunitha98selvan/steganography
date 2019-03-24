@@ -118,44 +118,44 @@ def main():
 	
 	carrier_image_name=input("Enter the file name of the carrier image: ")
 	if carrier_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
-		print('Invalid file type!')
-		print('\nProgram terminated')
+		#print('Invalid file type!')
+		#print('\nProgram terminated')
 		return
 	grey_img=cv2.imread(carrier_image_name)  # Converting the RGB carrier image to grey scale
 	carrier_grey_image_matrix = cv2.cvtColor(grey_img,cv2.COLOR_BGR2GRAY) #storing the image as a matrix
 
 	cv2.imwrite('greyscaleCarrierImage.jpg',carrier_grey_image_matrix)
 	
-	print('\nCarrier image:')
-	print('Length: ' +str(len(carrier_grey_image_matrix)) +'  width: ' + str(len(carrier_grey_image_matrix[0])))
-	print('\n')
+	#print('\nCarrier image:')
+	#print('Length: ' +str(len(carrier_grey_image_matrix)) +'  width: ' + str(len(carrier_grey_image_matrix[0])))
+	#print('\n')
 	
 	# Creating the final image matrix for storing the secret data in carrier
 	final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0])), dtype=np.uint8)
 
 	cover_image_name=input("Enter the file name of the cover image: ")
 	if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
-		print('Invalid file type!')
-		print('\nProgram terminated')
+		#print('Invalid file type!')
+		#print('\nProgram terminated')
 		return
 	img2 = cv2.imread(cover_image_name)
 	cover_grey_image_matrix = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
 	cv2.imwrite('greyscale2.jpg',cover_grey_image_matrix)
 	
-	# print(cover_image_matrix)
-	print('\nCover image:')
-	print('Length: ' +str(len(cover_grey_image_matrix)) +'  width: ' + str(len(cover_grey_image_matrix[0])))
-	print('\n')
-	print('Checking whether the cover image can be hid in the carrier image')
+	# #print(cover_image_matrix)
+	#print('\nCover image:')
+	#print('Length: ' +str(len(cover_grey_image_matrix)) +'  width: ' + str(len(cover_grey_image_matrix[0])))
+	#print('\n')
+	#print('Checking whether the cover image can be hid in the carrier image')
 	#Check to see whether the secret data can be hid in the carrier image
 	if len(carrier_grey_image_matrix)*3 <=2* len(cover_grey_image_matrix) or len(carrier_grey_image_matrix[0])*3 <=2* len(cover_grey_image_matrix[0]):
-		print("Unable to fit data in carrier image!\n")
+		#print("Unable to fit data in carrier image!\n")
 	else:
-		print("Able to fit data in carrier image!\n")
+		#print("Able to fit data in carrier image!\n")
 
 	row_cover = col_cover = 0
 	i=j=0
-	print('Performing the embedding procedure........\n')
+	#print('Performing the embedding procedure........\n')
 	while i<len(cover_grey_image_matrix) and j<len(cover_grey_image_matrix[0]): #Traversing the cover image matrix
 		# Extraction of 2x2 non-overlapping matrix
 		temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
@@ -174,18 +174,18 @@ def main():
 		final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
 		final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
 		final_image_matrix[i+1][j] = temp2[1][0]
-		final_image_matrix[i+1][j+1] = temp2[1][1]TypeError: Cannot handle this data type
-	print('Embedding procedure completed!\n')TypeError: Cannot handle this data type
+		final_image_matrix[i+1][j+1] = temp2[1][1]
+	#print('Embedding procedure completed!\n')
 	for i in range(len(cover_grey_image_matrix)): # TraTypeError: Cannot handle this data typeversing the block to right of the cover image in the carrier image
-		for j in range(len(cover_grey_image_matrix[0]),TypeError: Cannot handle this data typelen(carrier_grey_image_matrix[0])):
+		for j in range(len(cover_grey_image_matrix[0]),len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
 
 	for i in range(len(cover_grey_image_matrix),len(carrier_grey_image_matrix)): # Traversing the remaining region of the carrier matrix
 		for j in range(len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
-	print('Storing the result in Result.png\n')
+	#print('Storing the result in Result.png\n')
 	img = Image.fromarray(final_image_matrix) # Storing the final image matrix as a grey scale image
 	img.save('Result.png')
-	print('Done!')
+	#print('Done!')
 if __name__=='__main__':
 	main()

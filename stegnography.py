@@ -6,8 +6,23 @@ def abs(x):
 	if x>=0:
 		return x
 	return -1*x
+def getLowerBoundAndBits(num):
+	if num>=0 and num<=7:
+		return 0,3
+	if num>=8 and num<=15:
+		return 8,3
+	if num>=16 and num<=31:
+		return 16,3
+	if num>=32 and num<=63:
+		return 32,3
+	if num>=64 and num<=127:
+		return 64,4
+	if num<=255:
+		return 128,4
+	#print("Out of range")
+	exit(0)
 
-def embedding(carrier_pixel_block,cover_pixel,k=2):  #Assuming the pixel block is a list of list with the inner list having the RGB values
+def embedding(carrier_pixel_block,cover_pixel,k=3):  #Assuming the pixel block is a list of list with the inner list having the RGB values
 
 	# extracting the corresponding greyscale block value from the carrier pixel block
 	gx =  carrier_pixel_block[0][0]
@@ -47,29 +62,36 @@ def embedding(carrier_pixel_block,cover_pixel,k=2):  #Assuming the pixel block i
 	d2=abs(new_gx-gbr)
 	d3=abs(new_gx-gbl)
 
-	t1=t2=t3 = 2 # Setting the value of ti's
-	
-	l1 = int(format(gur,'08b')[-t1:])
-	l2 = int(format(gbr,'08b')[-t2:])	# Extract decimal value of ti bits from corresponding blocks 
-	l3 = int(format(gbl,'08b')[-t3:])	
-	
-	bin_gur[-1]=bin_cv[2] # Embedding bits of secret data in the blocks
-	bin_gur[-2]=bin_cv[3]
-	new_gur = ''.join(bin_gur)  
-	s1 = int(new_gur[-t1:])
-	new_gur = int(new_gur,2)
+	l1,t1 = getLowerBoundAndBits(d1)
+	l2,t2 = getLowerBoundAndBits(d2)
+	l3,t3 = getLowerBoundAndBits(d3)
+		
+	t1=3
+	t2=3
+	t3=2
 
-	bin_gbl[-1]=bin_cv[4]
-	bin_gbl[-2]=bin_cv[5]
-	new_gbl = ''.join(bin_gbl)
-	s3 = int(new_gbl[-t1:])
-	new_gbl = int(new_gbl,2)
+	s1 = int(''.join(bin_cv[:t1]),2)
+	s2 = int(''.join(bin_cv[t1:t1+t2]),2)
+	s3 = int(''.join(bin_cv[t1+t2:t1+t2+t3]),2)
+	# #print(s1,s2,s3)
 	
-	bin_gbr[-1]=bin_cv[6]
-	bin_gbr[-2]=bin_cv[7]
-	new_gbr = ''.join(bin_gbr)
-	s2 = int(new_gbr[-t1:])
-	new_gbr = int(new_gbr,2)
+	# bin_gur[-1]=bin_cv[2] # Embedding bits of secret data in the blocks
+	# bin_gur[-2]=bin_cv[3]
+	# new_gur = ''.join(bin_gur)  
+	# s1 = int(new_gur[-t1:])
+	# new_gur = int(new_gur,2)
+
+	# bin_gbl[-1]=bin_cv[4]
+	# bin_gbl[-2]=bin_cv[5]
+	# new_gbl = ''.join(bin_gbl)
+	# s3 = int(new_gbl[-t1:])
+	# new_gbl = int(new_gbl,2)
+	
+	# bin_gbr[-1]=bin_cv[6]
+	# bin_gbr[-2]=bin_cv[7]
+	# new_gbr = ''.join(bin_gbr)
+	# s2 = int(new_gbr[-t1:])
+	# new_gbr = int(new_gbr,2)
 	
 	d1_new=l1+s1 # Computing the new distance values
 	d2_new=l2+s2
@@ -138,19 +160,21 @@ def main():
 	cover_image_name='food2.jpeg'
 	# cover_image_name=input("Enter the file name of the cover image: ")
 	if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png']:
-		print('Invalid file type!')
-		print('\nProgram terminated')
+		#print('Invalid file type!')
+		#print('\nProgram terminated')
 		return
 	img2 = cv2.imread(cover_image_name)
 	cover_grey_image_matrix = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
 	cv2.imwrite('greyscale2.jpg',cover_grey_image_matrix)
-	
-	# print(cover_image_matrix)
+	print('-------')
+	print(cover_grey_image_matrix)
+	n = 0
+	#print(cover_image_matrix)
 	print('\nCover image:')
 	print('Length: ' +str(len(cover_grey_image_matrix)) +'  width: ' + str(len(cover_grey_image_matrix[0])))
 	print('\n')
 	print('Checking whether the cover image can be hid in the carrier image')
-	#Check to see whether the secret data can be hid in the carrier image
+	# Check to see whether the secret data can be hid in the carrier image
 	if len(carrier_grey_image_matrix)*3 <=2* len(cover_grey_image_matrix) or len(carrier_grey_image_matrix[0])*3 <=2* len(cover_grey_image_matrix[0]):
 		print("Unable to fit data in carrier image!\n")
 	else:
@@ -158,56 +182,68 @@ def main():
 
 	row_cover = col_cover = 0
 	i=j=0
-	len1,len2 = splitValues(len(cover_grey_image_matrix))
-	print(len1)
-	print(len2)
-	wid1,wid2 = splitValues(len(cover_grey_image_matrix[0]))
-	#To store the length and width of the cover as first two secret data
-	temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
-	temp2 = embedding(temp,len1) # Embedding length of cover image
-	print(temp)
-	final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
-	final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
-	final_image_matrix[i+1][j] = temp2[1][0]
-	final_image_matrix[i+1][j+1] = temp2[1][1]
-	j+=2
-	if j>=len(cover_grey_image_matrix[0]):
-			i+=2
-			j=0
-	temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
-	temp2 = embedding(temp,len2) # Embedding length of cover image
-	final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
-	final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
-	final_image_matrix[i+1][j] = temp2[1][0]
-	final_image_matrix[i+1][j+1] = temp2[1][1]
-	j+=2
-	if j>=len(cover_grey_image_matrix[0]):
-			i+=2
-			j=0
-	temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
-	temp2 = embedding(temp,wid1) # Embedding length of cover image
-	final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
-	final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
-	final_image_matrix[i+1][j] = temp2[1][0]
-	final_image_matrix[i+1][j+1] = temp2[1][1]
-	j+=2
-	if j>=len(cover_grey_image_matrix[0]):
-			i+=2
-			j=0
-	temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
-	temp2 = embedding(temp,wid2) # Embedding length of cover image
-	final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
-	final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
-	final_image_matrix[i+1][j] = temp2[1][0]
-	final_image_matrix[i+1][j+1] = temp2[1][1]
-	j+=2
-	if j>=len(cover_grey_image_matrix[0]):
-			i+=2
-			j=0
+	# len1,len2 = splitValues(len(cover_grey_image_matrix))
+	# #print(len1)
+	# #print(len2)
+	# wid1,wid2 = splitValues(len(cover_grey_image_matrix[0]))
+	# #To store the length and width of the cover as first two secret data
+	# temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
+	# temp2 = embedding(temp,len1) # Embedding length of cover image
+	# print(temp2)
+	# final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
+	# final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
+	# final_image_matrix[i+1][j] = temp2[1][0]
+	# final_image_matrix[i+1][j+1] = temp2[1][1]
+	# #print("Final image: ",final_image_matrix)
+	# k=2
+	# #print(int((format(temp2[0][0],'08b')[-k:]),2))
+	# #print(int((format(temp2[0][1], '08b')[-k:]),2))
+	# #print(int((format(temp2[1][0], '08b')[-k:]),2))
+	# #print(int((format(temp2[1][1], '08b')[-k:]),2))
 
-	print('Performing the embedding procedure........\n')
+	# j+=2
+	# if j>=len(cover_grey_image_matrix[0]):
+	# 		i+=2
+	# 		j=0
+	# temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
+	# temp2 = embedding(temp,len2) # Embedding length of cover image
+	# ##print(temp)
+	# ##print(temp2)
+	# final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
+	# final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
+	# final_image_matrix[i+1][j] = temp2[1][0]
+	# final_image_matrix[i+1][j+1] = temp2[1][1]
+
+	# j+=2
+	# if j>=len(cover_grey_image_matrix[0]):
+	# 		i+=2
+	# 		j=0
+	# temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
+	# temp2 = embedding(temp,wid1) # Embedding length of cover image
+	# final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
+	# final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
+	# final_image_matrix[i+1][j] = temp2[1][0]
+	# final_image_matrix[i+1][j+1] = temp2[1][1]
+	# j+=2
+	# if j>=len(cover_grey_image_matrix[0]):
+	# 		i+=2
+	# 		j=0
+	# temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
+	# temp2 = embedding(temp,wid2) # Embedding length of cover image
+	# final_image_matrix[i][j] = temp2[0][0]  # The modified pixel values are stored in the final image matrix
+	# final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
+	# final_image_matrix[i+1][j] = temp2[1][0]
+	# final_image_matrix[i+1][j+1] = temp2[1][1]
+	# j+=2
+	# if j>=len(cover_grey_image_matrix[0]):
+	# 		i+=2
+	# 		j=0
+
+	#print('Performing the embedding procedure........\n')
+	print(len(cover_grey_image_matrix[0]))
 	while i<len(cover_grey_image_matrix) and j<len(cover_grey_image_matrix[0]): #Traversing the cover image matrix
 		# Extraction of 2x2 non-overlapping matrix
+		n+=1
 		temp = [[carrier_grey_image_matrix[i][j],carrier_grey_image_matrix[i][j+1]],[carrier_grey_image_matrix[i+1][j],carrier_grey_image_matrix[i+1][j+1]]]
 		cover = cover_grey_image_matrix[row_cover][col_cover]
 		col_cover+=1
@@ -224,7 +260,12 @@ def main():
 		final_image_matrix[i][j+1] = temp2[0][1] # Values are in grey scale
 		final_image_matrix[i+1][j] = temp2[1][0]
 		final_image_matrix[i+1][j+1] = temp2[1][1]
-	print('Embedding procedure completed!\n')
+	print("No. of pixel blocks: " )
+	print(n)
+	print('row: ' + str(row_cover))
+	print('col: ' + str(col_cover))
+	
+	#print('Embedding procedure completed!\n')
 	for i in range(len(cover_grey_image_matrix)): # Traversing the block to right of the cover image in the carrier image
 		for j in range(len(cover_grey_image_matrix[0]),len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
@@ -232,9 +273,9 @@ def main():
 	for i in range(len(cover_grey_image_matrix),len(carrier_grey_image_matrix)): # Traversing the remaining region of the carrier matrix
 		for j in range(len(carrier_grey_image_matrix[0])):
 			final_image_matrix[i][j] = carrier_grey_image_matrix[i][j]
-	print('Storing the result in Check.png\n')
+	print('Storing the result in Check3.png\n')
 	img = Image.fromarray(final_image_matrix) # Storing the final image matrix as a grey scale image
-	img.save('Check2.png')
+	img.save('Check3.png')
 	print('Done!')
 if __name__=='__main__':
 	main()
