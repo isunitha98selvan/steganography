@@ -64,17 +64,41 @@ def decrypt(carrier_pixel_block,k=3):
 
 def main():
     encrypted_image_name='Check3.png'
-    length = 602
-    width  = 1438
-    secret_image = np.zeros([length,width],dtype=int)
     img=cv2.imread(encrypted_image_name)
+    
     ##print(img) 
     encrypted_image_matrix = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    #print('Image:')
-    # print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
-    ##print(encrypted_image_matrix)
-    i=0
-    j=0
+    i = len(encrypted_image_matrix)
+    j = len(encrypted_image_matrix[0])
+    i-=3
+    j-=3
+    temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
+    len1 = decrypt(temp) # Embedding length of cover image
+    print(len1)
+    
+    j-=2
+    temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
+    len2 = decrypt(temp) # Embedding length of cover image
+    print(len2)
+    j-=2
+    
+    temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
+    wid1 = decrypt(temp) # Embedding length of cover image
+    print(wid1)
+    j-=2
+    
+    temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
+    wid2 = decrypt(temp) # Embedding length of cover image
+    print(wid2)
+
+    length = int('%i%i' % (len1,len2))
+    width = int('%i%i' % (wid1,wid2))
+    print("Length,width= ",length,width)
+    secret_image = np.zeros([length,width],dtype=int)
+
+    print('Image:')
+    print('Length: ' +str(len(encrypted_image_matrix)) +'  width: ' + str(len(encrypted_image_matrix[0])))
+    print(encrypted_image_matrix)
     count=0
     row_number=0
     # for i in range(300,400):
@@ -82,7 +106,9 @@ def main():
     count=0
     row_cover=col_cover=0
     n=0
-    while row_cover<length and col_cover<width and i<3120 and j<4160 : #Traversing the cover image matrix
+    i=0
+    j=0
+    while row_cover<length and col_cover<width: #Traversing the cover image matrix
         temp = [[encrypted_image_matrix[i][j],encrypted_image_matrix[i][j+1]],[encrypted_image_matrix[i+1][j],encrypted_image_matrix[i+1][j+1]]]
         #print(temp)
         secret_image[row_cover][col_cover] = decrypt(temp)
@@ -98,15 +124,14 @@ def main():
             j=0
         # count+=1
         n+=1
-    print
-    
-    ("count= ",count)
-    print(row_cover,col_cover)
+    #print(n)
+    #print("count= ",count)
+    #print(row_cover,col_cover)
     # for i in range(count):
     #  	print(secret_image[i].tolist())
     img = Image.fromarray(np.uint8(secret_image) , 'L')
 
-    # img = Image.fromarray(secret_image,L)
+    #img = Image.fromarray(secret_image,L)
     img.save("Cover.png")
     # img.show()
     

@@ -151,7 +151,7 @@ def main():
 	if len(carrier_grey_image_matrix)*3 <=2* len(cover_grey_image_matrix) or len(carrier_grey_image_matrix[0])*3 <=2* len(cover_grey_image_matrix[0]):
 		#print("Unable to fit data in carrier image!\n")
 	else:
-		#print("Able to fit data in carrier image!\n")
+		print("Able to fit data in carrier image!\n")
 
 	row_cover = col_cover = 0
 	i=j=0
