@@ -128,8 +128,9 @@ def main():
 	for filename in os.listdir(root_dir):
 		cover_images.append(os.path.join(root_dir,filename))
 	#carrier image
+	cover_index = 0
 	for carrier_index in range(len(carrier_images)):
-		for cover_index in range(len(cover_images)):
+		for ptr in range(10):
 
 			carrier_image_name=carrier_images[carrier_index]
 			print('Carrier image: ' + carrier_image_name)
@@ -151,6 +152,7 @@ def main():
 			# Creating the final image matrix for storing the secret data in carrier
 			final_image_matrix = np.zeros((len(carrier_grey_image_matrix), len(carrier_grey_image_matrix[0])), dtype=np.uint8)
 			cover_image_name=cover_images[cover_index]
+			cover_index+=1
 			print('Cover image: ' + cover_image_name)
 			if cover_image_name.split('.')[-1] not in ['jpg','jpeg','png','tiff']:
 				print('Invalid file type!')
